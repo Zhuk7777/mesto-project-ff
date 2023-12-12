@@ -1,25 +1,27 @@
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
-const cardContainer = document.querySelector('.places__list');
+const cardsContainer = document.querySelector('.places__list');
 
 // @todo: Функция создания карточки
-const createCard  = (cardImage, cardTitle, deleteCard, likeCard) => {
+const createCard  = (cardData, deleteCard, likeCard) => {
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
+  const likeButton = cardElement.querySelector('.card__like-button');
 
-  cardElement.querySelector('.card__image').src = cardImage;
-  cardElement.querySelector('.card__title').textContent = cardTitle;
-  cardElement.querySelector('.card__delete-button').addEventListener('click', deleteCard);
-  cardElement.querySelector('.card__like-button').addEventListener('click', likeCard);
+  cardElement.querySelector('.card__image').src = cardData.link;
+  cardElement.querySelector('.card__image').alt = cardData.name;
+  cardElement.querySelector('.card__title').textContent = cardData.name;
+  cardElement.querySelector('.card__delete-button').addEventListener('click', () => deleteCard(cardElement));
+  likeButton.addEventListener('click', () => likeCard(likeButton));
 
   return cardElement;
 }
 
 // @todo: Функция удаления карточки
-const deleteCard = evt => {evt.target.closest('.card').remove()}
+const deleteCard = card => {card.remove()}
 
 // @todo: функция лайка карточки
-const likeCard = evt => {evt.target.classList.toggle('card__like-button_is-active')}
+const likeCard = likeButton => {likeButton.classList.toggle('card__like-button_is-active')}
 
 // @todo: Вывести карточки на страницу
-cardContainer.append(...initialCards.map(card => createCard(card.link, card.name, deleteCard, likeCard)));
+cardsContainer.append(...initialCards.map(card => createCard(card, deleteCard, likeCard)));
