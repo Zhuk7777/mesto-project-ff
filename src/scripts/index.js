@@ -1,30 +1,60 @@
 import '../pages/index.css';
 import initialCards from './cards';
+import {createCard, deleteCard, likeCard} from './card';
+import {openModal, closeModal} from './modal';
 
-// @todo: Темплейт карточки
-const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
 const cardsContainer = document.querySelector('.places__list');
 
-// @todo: Функция создания карточки
-const createCard  = (cardData, deleteCard, likeCard) => {
-  const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-  const likeButton = cardElement.querySelector('.card__like-button');
+const editButton = document.querySelector('.profile__edit-button');
+const addButton = document.querySelector('.profile__add-button');
 
-  cardElement.querySelector('.card__image').src = cardData.link;
-  cardElement.querySelector('.card__image').alt = cardData.name;
-  cardElement.querySelector('.card__title').textContent = cardData.name;
-  cardElement.querySelector('.card__delete-button').addEventListener('click', () => deleteCard(cardElement));
-  likeButton.addEventListener('click', () => likeCard(likeButton));
+const editPopup = document.querySelector('.popup_type_edit');
+const addPopup = document.querySelector('.popup_type_new-card');
+const imagePopup = document.querySelector('.popup_type_image');
 
-  return cardElement;
+const editForm = document.forms['edit-profile'];
+const addForm = document.forms['new-place'];
+
+// @todo: Слушатели событий
+editButton.addEventListener('click', () => {
+  editForm.elements.name.value = document.querySelector('.profile__title').textContent;
+  editForm.elements.description.value = document.querySelector('.profile__description').textContent;
+  openModal(editPopup);
+});
+addButton.addEventListener('click', () => {openModal(addPopup)});
+editForm.addEventListener('submit', (evt) => editFormSubmit(evt));
+addForm.addEventListener('submit', (evt) => addFormSubmit(evt));
+
+// @todo: Функция открытия изображения карточки
+const openCardImage = (imageData) => {
+  imagePopup.querySelector('.popup__image').src = imageData.link;
+  imagePopup.querySelector('.popup__image').alt = imageData.name;
+  imagePopup.querySelector('.popup__caption').textContent = imageData.name;
+
+  openModal(imagePopup);
 }
 
-// @todo: Функция удаления карточки
-const deleteCard = card => {card.remove()}
+// @todo: Обработчик отправки формы редактирования профиля
+const editFormSubmit = (evt) => {
+  evt.preventDefault();
+  document.querySelector('.profile__title').textContent = editForm.elements.name.value;
+  document.querySelector('.profile__description').textContent = editForm.elements.description.value;
+  closeModal(editPopup);
+}
 
-// @todo: функция лайка карточки
-const likeCard = likeButton => {likeButton.classList.toggle('card__like-button_is-active')}
+// @todo: Обработчик отправки формы дабваления новой карточки
+const addFormSubmit = (evt) => {
+  evt.preventDefault();
+  const cardData = {
+    name: addForm.elements['place-name'].value,
+    link: addForm.elements.link.value
+  }
+  const newCard = createCard(cardData, deleteCard, likeCard, openCardImage);
+  cardsContainer.prepend(newCard);
+  addForm.reset();
+  closeModal(addPopup);
+}
 
-// @todo: Вывести карточки на страницу
-cardsContainer.append(...initialCards.map(card => createCard(card, deleteCard, likeCard)));
+// @todo: Вывод карточек на страницу
+cardsContainer.append(...initialCards.map(card => createCard(card, deleteCard, likeCard, openCardImage)));
