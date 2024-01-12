@@ -1,25 +1,39 @@
-// @todo: Функция открытия модального окна
+/**
+ * Функция открытия модального окна
+ * @function
+ * @param {object} popup - модальное окно, которое надо открыть
+ */
 export const openModal = (popup) => {
   popup.classList.add('popup_is-animated');
-  setTimeout(() =>{popup.classList.add('popup_is-opened')}, 0);
-  popup.addEventListener('click', clickPopup);
+  popup.classList.add('popup_is-opened');
   document.addEventListener('keydown', pressEscape);
 }
 
-// @todo: Функция закрытия модального окна
+/**
+ * Функция закрытия модального окна
+ * @function
+ * @param {object} popup - модальное окно, которое надо закрыть
+ */
 export const closeModal = (popup) => {
-  popup.removeEventListener('click', clickPopup);
   document.removeEventListener('keydown', pressEscape);
   popup.classList.remove('popup_is-opened');
 }
 
-// @todo: Обработчик события клика мышкой на модальное окно
-const clickPopup = (evt) => {
+/**
+ * Обработчик события клика мышкой при открытом модальном окне
+ * @function
+ * @param {object} evt - событие клика мышкой
+ */
+export const clickPopup = (evt) => {
   if(evt.target.classList.contains('popup_is-opened') || evt.target.classList.contains('popup__close'))
     closeModal(document.querySelector('.popup_is-opened'));
 }
 
-// @todo: Обработчик события нажатия клавиши Escape при открытом модальном окне
+/**
+ * Обработчик события нажатия клавиши Escape при открытом модальном окне
+ * @function
+ * @param {object} evt событие нажатия клавиши Escape
+ */
 const pressEscape = (evt) => {
   if(evt.key === 'Escape')
     closeModal(document.querySelector('.popup_is-opened'));

@@ -1,9 +1,9 @@
 import '../pages/index.css';
 import initialCards from './cards';
 import {createCard, deleteCard, likeCard} from './card';
-import {openModal, closeModal} from './modal';
+import {openModal, closeModal, clickPopup} from './modal';
 
-// @todo: DOM узлы
+//DOM узлы
 const cardsContainer = document.querySelector('.places__list');
 
 const editButton = document.querySelector('.profile__edit-button');
@@ -16,39 +16,68 @@ const imagePopup = document.querySelector('.popup_type_image');
 const editForm = document.forms['edit-profile'];
 const addForm = document.forms['new-place'];
 
-// @todo: Слушатели событий
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+const imageInImagePopup = imagePopup.querySelector('.popup__image');
+const captionInImagePopup = imagePopup.querySelector('.popup__caption');
+
+const nameInEditForm = editForm.elements.name;
+const descriptionInEditForm = editForm.elements.description;
+
+const placeNameInAddForm = addForm.elements['place-name'];
+const linkInAddForm = addForm.elements.link;
+
+//Слушатели событий
 editButton.addEventListener('click', () => {
-  editForm.elements.name.value = document.querySelector('.profile__title').textContent;
-  editForm.elements.description.value = document.querySelector('.profile__description').textContent;
+  nameInEditForm.value = profileTitle.textContent;
+  descriptionInEditForm.value = profileDescription.textContent;
   openModal(editPopup);
 });
 addButton.addEventListener('click', () => {openModal(addPopup)});
+
 editForm.addEventListener('submit', (evt) => editFormSubmit(evt));
 addForm.addEventListener('submit', (evt) => addFormSubmit(evt));
 
-// @todo: Функция открытия изображения карточки
+editPopup.addEventListener('click', clickPopup);
+addPopup.addEventListener('click', clickPopup);
+imagePopup.addEventListener('click', clickPopup);
+
+/**
+ * Функция открытия изображения карточки
+ * @function
+ * @param {object} imageData - данные картинки: ссылка на нее, ее описание
+ */
 const openCardImage = (imageData) => {
-  imagePopup.querySelector('.popup__image').src = imageData.link;
-  imagePopup.querySelector('.popup__image').alt = imageData.name;
-  imagePopup.querySelector('.popup__caption').textContent = imageData.name;
+  imageInImagePopup.src = imageData.link;
+  imageInImagePopup.alt = imageData.name;
+  captionInImagePopup.textContent = imageData.name;
 
   openModal(imagePopup);
 }
 
-// @todo: Обработчик отправки формы редактирования профиля
+/**
+ * Обработчик отправки формы редактирования профиля
+ * @function
+ * @param {object} evt - событие отправки формы редактирования
+ */
 const editFormSubmit = (evt) => {
   evt.preventDefault();
-  document.querySelector('.profile__title').textContent = editForm.elements.name.value;
-  document.querySelector('.profile__description').textContent = editForm.elements.description.value;
+  profileTitle.textContent = nameInEditForm.value;
+  profileDescription.textContent = descriptionInEditForm.value;
   closeModal(editPopup);
 }
 
-// @todo: Обработчик отправки формы дабваления новой карточки
+/**
+ * Обработчик отправки формы дабваления новой карточки
+ * @function
+ * @param {object} evt - событие добавления новой карточки
+ */
 const addFormSubmit = (evt) => {
   evt.preventDefault();
   const cardData = {
-    name: addForm.elements['place-name'].value,
-    link: addForm.elements.link.value
+    name: placeNameInAddForm.value,
+    link: linkInAddForm.value
   }
   const newCard = createCard(cardData, deleteCard, likeCard, openCardImage);
   cardsContainer.prepend(newCard);
@@ -56,5 +85,5 @@ const addFormSubmit = (evt) => {
   closeModal(addPopup);
 }
 
-// @todo: Вывод карточек на страницу
+//Вывод карточек на страницу
 cardsContainer.append(...initialCards.map(card => createCard(card, deleteCard, likeCard, openCardImage)));
