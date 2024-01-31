@@ -1,7 +1,17 @@
 import '../pages/index.css';
-import initialCards from './cards';
 import {createCard, deleteCard, likeCard} from './card';
 import {openModal, closeModal, clickPopup} from './modal';
+import { enableValidation, clearValidation } from './validation';
+import { getInitialCards } from './api';
+
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
 //DOM узлы
 const cardsContainer = document.querySelector('.places__list');
@@ -32,6 +42,7 @@ const linkInAddForm = addForm.elements.link;
 editButton.addEventListener('click', () => {
   nameInEditForm.value = profileTitle.textContent;
   descriptionInEditForm.value = profileDescription.textContent;
+  clearValidation(editForm, validationConfig, true);
   openModal(editPopup);
 });
 addButton.addEventListener('click', () => {openModal(addPopup)});
@@ -82,8 +93,18 @@ const addFormSubmit = (evt) => {
   const newCard = createCard(cardData, deleteCard, likeCard, openCardImage);
   cardsContainer.prepend(newCard);
   addForm.reset();
+  clearValidation(addForm, validationConfig);
   closeModal(addPopup);
 }
 
+enableValidation(validationConfig); 
+
 //Вывод карточек на страницу
-cardsContainer.append(...initialCards.map(card => createCard(card, deleteCard, likeCard, openCardImage)));
+getInitialCards()
+  .then((cards) => {
+    cardsContainer.append(...cards.map(card => createCard(card, deleteCard, likeCard, openCardImage)));
+  })
+  .catch((err) => {
+    console.log(err);
+  }); 
+
