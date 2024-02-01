@@ -10,18 +10,25 @@ const cardTemplate = document.querySelector('#card-template').content;
  * @param {function} openCardImage - функция открытия изображения
  * @returns готовый к вставке на страницу объект карточки
  */
-const createCard  = (cardData, deleteCard, likeCard, openCardImage) => {
+const createCard  = (cardData, currentUserId, deleteCard, likeCard, openCardImage) => {
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
+  const title = cardElement.querySelector('.card__title');
   const likeButton = cardElement.querySelector('.card__like-button');
-  const cardImage =  cardElement.querySelector('.card__image');
+  const likesCount = cardElement.querySelector('.card__likes-count');
+  const image =  cardElement.querySelector('.card__image');
+  const deleteButton = cardElement.querySelector('.card__delete-button');
 
-  cardImage.src = cardData.link;
-  cardImage.alt = cardData.name;
-  cardElement.querySelector('.card__title').textContent = cardData.name;
+  image.src = cardData.link;
+  image.alt = cardData.name;
+  title.textContent = cardData.name;
+  likesCount.textContent = cardData.likes.length;
 
-  cardElement.querySelector('.card__delete-button').addEventListener('click', () => deleteCard(cardElement));
+  if(currentUserId === cardData.owner._id){
+    deleteButton.addEventListener('click', () => deleteCard(cardElement));
+    deleteButton.classList.add('card__delete-button_visible');
+  }
   likeButton.addEventListener('click', () => likeCard(likeButton));
-  cardImage.addEventListener('click', () => openCardImage(cardData));
+  image.addEventListener('click', () => openCardImage(cardData));
 
   return cardElement;
 }

@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {createCard, deleteCard, likeCard} from './card';
 import {openModal, closeModal, clickPopup} from './modal';
 import { enableValidation, clearValidation } from './validation';
-import { getInitialCards } from './api';
+import { getInitialCards, postNewCard, getUserInfo, patchUserInfo } from './api';
 
 const validationConfig = {
   formSelector: '.popup__form',
@@ -12,6 +12,8 @@ const validationConfig = {
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
 }
+
+const promises = [getInitialCards(), getUserInfo()];
 
 //DOM узлы
 const cardsContainer = document.querySelector('.places__list');
@@ -67,6 +69,11 @@ const openCardImage = (imageData) => {
   openModal(imagePopup);
 }
 
+const setUserInfo = (name, description) => {
+  profileTitle.textContent = name;
+  profileDescription.textContent = description;
+}
+
 /**
  * Обработчик отправки формы редактирования профиля
  * @function
@@ -74,8 +81,13 @@ const openCardImage = (imageData) => {
  */
 const editFormSubmit = (evt) => {
   evt.preventDefault();
-  profileTitle.textContent = nameInEditForm.value;
-  profileDescription.textContent = descriptionInEditForm.value;
+  patchUserInfo({name: nameInEditForm.value, about: descriptionInEditForm.value})
+    .then(res => {
+      setUserInfo(res.name, res.about);
+    })
+    .catch(err => {
+      console.log(err);
+    });
   closeModal(editPopup);
 }
 
@@ -86,12 +98,13 @@ const editFormSubmit = (evt) => {
  */
 const addFormSubmit = (evt) => {
   evt.preventDefault();
-  const cardData = {
-    name: placeNameInAddForm.value,
-    link: linkInAddForm.value
-  }
-  const newCard = createCard(cardData, deleteCard, likeCard, openCardImage);
-  cardsContainer.prepend(newCard);
+  postNewCard({name: placeNameInAddForm.value, link: linkInAddForm.value})
+    .then(card => {
+      cardsContainer.prepend(createCard(card, card.owner._id, deleteCard, likeCard, openCardImage));
+    })
+    .catch(err => {
+      console.log(err);
+    });
   addForm.reset();
   clearValidation(addForm, validationConfig);
   closeModal(addPopup);
@@ -99,12 +112,11 @@ const addFormSubmit = (evt) => {
 
 enableValidation(validationConfig); 
 
-//Вывод карточек на страницу
-getInitialCards()
-  .then((cards) => {
-    cardsContainer.append(...cards.map(card => createCard(card, deleteCard, likeCard, openCardImage)));
+Promise.all(promises)
+  .then(([cards, user]) => {
+    cardsContainer.append(...cards.map(card => createCard(card, user._id, deleteCard, likeCard, openCardImage)));
+    setUserInfo(user.name, user.about);
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err);
-  }); 
-
+  });
