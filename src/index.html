@@ -14,7 +14,7 @@
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);"></div>
+      <div class="profile__image"></div>
       <div class="profile__info">
         <h1 class="profile__title"></h1>
         <button class="profile__edit-button" type="button"></button>
@@ -71,6 +71,26 @@
       </form>
     </div>
   </div>
+  <div class="popup popup_type_new-avatar">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="new-avatar">
+        <label class="popup__field">
+          <input
+            type="url"
+            name="link"
+            class="popup__input popup__input_type_url"
+            id="link-input_type_avatar"
+            placeholder="Ссылка на картинку"
+            required
+          >
+          <span class="popup__error link-input_type_avatar-error"></span>
+        </label>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
   <div class="popup popup_type_new-card">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -110,7 +130,7 @@
     <div class="popup__content popup__content_content_delete-button">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Вы уверены?</h3>
-      <button type="button" class="button popup__button">Да</button>
+      <button type="button" class="button popup__button popup__button_type_delete">Да</button>
     </div>
   </div>
   <div class="popup popup_type_image">
@@ -119,6 +139,13 @@
       <img src="" alt="" class="popup__image">
       <p class="popup__caption"></p>
     </div>
+  </div>
+</div>
+<div class="popup popup_type_error">
+  <div class="popup__content">
+    <button type="button" class="popup__close"></button>
+    <h3 class="popup__title">Упс...</h3>
+    <span class="popup__message"></span>
   </div>
 </div>
 

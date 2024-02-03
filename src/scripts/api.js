@@ -14,7 +14,7 @@ export const getInitialCards = () => {
       if (res.ok)
         return res.json();
       
-      return Promise.reject(`Ошибка: ${res.status}`);
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
     });
 } 
 
@@ -31,12 +31,12 @@ export const postNewCard = (cardData) => {
       if (res.ok)
         return res.json();
       
-      return Promise.reject(`Ошибка: ${res.status}`);
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
     });
 }
 
 export const deleteCard = (cardId) => {
-  return fetch(`${config.baseUrl}/cards`, {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
     headers: config.headers
   })
@@ -44,7 +44,33 @@ export const deleteCard = (cardId) => {
       if (res.ok)
         return res.json();
       
-      return Promise.reject(`Ошибка: ${res.status}`);
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
+    });
+}
+
+export const putLike = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId} `, {
+    method: 'PUT',
+    headers: config.headers
+  })
+    .then(res => {
+      if (res.ok)
+        return res.json();
+      
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
+    });
+}
+
+export const deleteLike = (cardId) => {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId} `, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+    .then(res => {
+      if (res.ok)
+        return res.json();
+      
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
     });
 }
 
@@ -56,7 +82,7 @@ export const getUserInfo = () => {
       if (res.ok)
         return res.json();
       
-      return Promise.reject(`Ошибка: ${res.status}`);
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
     });
 }
 
@@ -73,6 +99,22 @@ export const patchUserInfo = (userInfo) => {
       if (res.ok)
         return res.json();
       
-      return Promise.reject(`Ошибка: ${res.status}`);
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
+    });
+}
+
+export const patchUserAvatar = (userAvatar) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: userAvatar
+    })
+  })
+    .then(res => {
+      if (res.ok)
+        return res.json();
+      
+      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
     });
 }
