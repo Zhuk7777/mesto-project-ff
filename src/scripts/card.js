@@ -1,17 +1,7 @@
 import { putLike, deleteLike } from "./api";
 
-//Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
-/**
- * Функция создания карточки
- * @function
- * @param {object} cardData - данные картинки: ссылка на нее, ее описание
- * @param {function} deleteCard - функция удаления карточки
- * @param {function} likeCard - функция лайка карточки
- * @param {function} openCardImage - функция открытия изображения
- * @returns готовый к вставке на страницу объект карточки
- */
 const createCard  = (cardData, userId, deleteCard, likeCard, openCardImage, showError) => {
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
   const titleElement = cardElement.querySelector('.card__title');
@@ -37,11 +27,6 @@ const createCard  = (cardData, userId, deleteCard, likeCard, openCardImage, show
   return cardElement;
 }
 
-/**
- * функция лайка карточки
- * @function
- * @param {object} likeButton - кликнутая кнопка лайка
- */
 const likeCard = (cardId, likeButtonElement, likesCountElement, showError) => {
   if(isLikeButtonActive(likeButtonElement))
   {

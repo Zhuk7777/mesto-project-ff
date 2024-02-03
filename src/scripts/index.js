@@ -18,7 +18,6 @@ const cardToDeleted = {
   cardId: null
 }
 
-//DOM узлы
 const cardsContainer = document.querySelector('.places__list');
 
 const editButton = document.querySelector('.profile__edit-button');
@@ -53,7 +52,7 @@ const linkInAvatarForm = avatarForm.elements.link;
 
 const popupMessage = document.querySelector('.popup__message');
 
-//Слушатели событий
+
 editButton.addEventListener('click', () => {
   nameInEditForm.value = profileTitle.textContent;
   descriptionInEditForm.value = profileDescription.textContent;
@@ -66,7 +65,7 @@ profileImage.addEventListener('click', () => openModal(avatarPopup));
 
 editForm.addEventListener('submit', (evt) => editFormSubmit(evt));
 addForm.addEventListener('submit', (evt) => addFormSubmit(evt));
-avatarPopup.addEventListener('submit', (evt) => avatarPopupSubmit(evt));
+avatarPopup.addEventListener('submit', (evt) => avatarFormSubmit(evt));
 
 editPopup.addEventListener('click', clickPopup);
 addPopup.addEventListener('click', clickPopup);
@@ -75,35 +74,17 @@ imagePopup.addEventListener('click', clickPopup);
 avatarPopup.addEventListener('click', clickPopup);
 errorPopup.addEventListener('click', clickPopup);
 
-/**
- * Функция открытия изображения карточки
- * @function
- * @param {object} imageData - данные картинки: ссылка на нее, ее описание
- */
+const renderLoading = (formButtonElement, textContent, isLoading) => {
+  const textForLoading = {
+    'Создать': 'Создание',
+    'Сохранить': 'Сохранение',
+    'Да': 'Удаление'
+  }
 
-const openDeletePopup = (card, cardId) => {
-  openModal(deletePopup);
-  cardToDeleted.cardElement = card;
-  cardToDeleted.cardId = cardId;
-}
-
-const confirmDeletion = ({cardElement, cardId}) => {
-  deleteCard(cardId)
-    .then(res => {
-      cardElement.remove();
-    })
-    .catch(err => {
-      console.log(err);
-    })
-    closeModal(deletePopup);
-}
-
-const openCardImage = (imageData) => {
-  imageInImagePopup.src = imageData.link;
-  imageInImagePopup.alt = imageData.name;
-  captionInImagePopup.textContent = imageData.name;
-
-  openModal(imagePopup);
+  if(isLoading)
+    formButtonElement.textContent = `${textForLoading[textContent]}...`;
+  else
+    formButtonElement.textContent = textContent;
 }
 
 const showError = (err) => {
@@ -119,50 +100,95 @@ const setUserInfo = (name, description, avatar = null) => {
     profileImage.style.backgroundImage = `url(${avatar})`;
 }
 
-/**
- * Обработчик отправки формы редактирования профиля
- * @function
- * @param {object} evt - событие отправки формы редактирования
- */
+const openDeletePopup = (card, cardId) => {
+  openModal(deletePopup);
+  cardToDeleted.cardElement = card;
+  cardToDeleted.cardId = cardId;
+}
+
+const confirmDeletion = ({cardElement, cardId}) => {
+  const buttonTextContent = deleteButton.textContent;
+  renderLoading(deleteButton, buttonTextContent, true);
+
+  deleteCard(cardId)
+    .then(res => {
+      cardElement.remove();
+    })
+    .catch(err => {
+      showError(err);
+    })
+    .finally(() => {
+      renderLoading(deleteButton, buttonTextContent, false);
+    });
+
+    closeModal(deletePopup);
+}
+
+const openCardImage = (imageData) => {
+  imageInImagePopup.src = imageData.link;
+  imageInImagePopup.alt = imageData.name;
+  captionInImagePopup.textContent = imageData.name;
+
+  openModal(imagePopup);
+}
+
 const editFormSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  const buttonTextContent = evt.submitter.textContent;
+
+  renderLoading(submitButton, buttonTextContent, true);
   patchUserInfo({name: nameInEditForm.value, about: descriptionInEditForm.value})
     .then(res => {
       setUserInfo(res.name, res.about);
     })
     .catch(err => {
       showError(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, buttonTextContent, false);
     });
+
   closeModal(editPopup);
 }
 
-/**
- * Обработчик отправки формы дабваления новой карточки
- * @function
- * @param {object} evt - событие добавления новой карточки
- */
 const addFormSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  const buttonTextContent = evt.submitter.textContent;
+
+  renderLoading(submitButton, buttonTextContent, true);
   postNewCard({name: placeNameInAddForm.value, link: linkInAddForm.value})
     .then(card => {
       cardsContainer.prepend(createCard(card, card.owner._id, openDeletePopup, likeCard, openCardImage));
     })
     .catch(err => {
       showError(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, buttonTextContent, false);
     });
+
   addForm.reset();
   clearValidation(addForm, validationConfig);
   closeModal(addPopup);
 }
 
-const avatarPopupSubmit = (evt) => {
+const avatarFormSubmit = (evt) => {
   evt.preventDefault();
+  const submitButton = evt.submitter;
+  const buttonTextContent = evt.submitter.textContent;
+
+  renderLoading(submitButton, buttonTextContent, true);
   patchUserAvatar(linkInAvatarForm.value)
     .then(user => {
       profileImage.style.backgroundImage = `url(${user.avatar})`;
     })
     .catch(err => {
       showError(err);
+    })
+    .finally(() => {
+      renderLoading(submitButton, buttonTextContent, false);
     });
 
   avatarForm.reset();
