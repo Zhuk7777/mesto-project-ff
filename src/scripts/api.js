@@ -6,16 +6,17 @@ const config = {
   }
 }
 
+const getResponseData = (res) => {
+  if (!res.ok)
+    return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
+  return res.json();
+}
+
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 } 
 
 export const postNewCard = (cardData) => {
@@ -27,12 +28,7 @@ export const postNewCard = (cardData) => {
       link: cardData.link
     })
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const deleteCard = (cardId) => {
@@ -40,12 +36,7 @@ export const deleteCard = (cardId) => {
     method: 'DELETE',
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const putLike = (cardId) => {
@@ -53,12 +44,7 @@ export const putLike = (cardId) => {
     method: 'PUT',
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const deleteLike = (cardId) => {
@@ -66,24 +52,14 @@ export const deleteLike = (cardId) => {
     method: 'DELETE',
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const getUserInfo = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const patchUserInfo = (userInfo) => {
@@ -95,12 +71,7 @@ export const patchUserInfo = (userInfo) => {
       about: userInfo.about
     })
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
 
 export const patchUserAvatar = (userAvatar) => {
@@ -111,10 +82,5 @@ export const patchUserAvatar = (userAvatar) => {
       avatar: userAvatar
     })
   })
-    .then(res => {
-      if (res.ok)
-        return res.json();
-      
-      return Promise.reject(`Что-то пошло не так. Ошибка: ${res.status}`);
-    });
+    .then(res => getResponseData(res));
 }
