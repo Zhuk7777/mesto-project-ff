@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import {createCard, likeCard} from './card';
+import {createCard, openDeletePopup, likeCard, cardToDeleted} from './card';
 import {openModal, closeModal, clickPopup} from './modal';
 import { enableValidation, clearValidation } from './validation';
 import { getInitialCards, postNewCard, deleteCard, getUserInfo, patchUserInfo, patchUserAvatar } from './api';
@@ -11,11 +11,6 @@ const validationConfig = {
   inactiveButtonClass: 'popup__button_disabled',
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
-}
-
-const cardToDeleted = {
-  cardElement: null,
-  cardId: null
 }
 
 const cardsContainer = document.querySelector('.places__list');
@@ -100,12 +95,6 @@ const setUserInfo = (name, description, avatar = null) => {
     profileImage.style.backgroundImage = `url(${avatar})`;
 }
 
-const openDeletePopup = (card, cardId) => {
-  openModal(deletePopup);
-  cardToDeleted.cardElement = card;
-  cardToDeleted.cardId = cardId;
-}
-
 const confirmDeletion = ({cardElement, cardId}) => {
   const buttonTextContent = deleteButton.textContent;
   renderLoading(deleteButton, buttonTextContent, true);
@@ -160,7 +149,7 @@ const addFormSubmit = (evt) => {
   renderLoading(submitButton, buttonTextContent, true);
   postNewCard({name: placeNameInAddForm.value, link: linkInAddForm.value})
     .then(card => {
-      cardsContainer.prepend(createCard(card, card.owner._id, openDeletePopup, likeCard, openCardImage));
+      cardsContainer.prepend(createCard(card, card.owner._id, openDeletePopup, likeCard, openCardImage, showError));
     })
     .catch(err => {
       showError(err);
